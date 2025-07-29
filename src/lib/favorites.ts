@@ -1,4 +1,4 @@
-import { Recipe } from "./recipe-api";
+import { type Recipe } from "./recipe-api";
 
 const FAVORITES_KEY = "recipe-favorites";
 

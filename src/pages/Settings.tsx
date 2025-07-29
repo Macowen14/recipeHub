@@ -1,3 +1,4 @@
+// src/pages/Settings.tsx
 import { Header } from "../components/header";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -29,10 +30,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
+import { useClerk } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
   const [favoritesCount] = useState(getFavorites().length);
+  const { signOut } = useClerk();
+  const navigate = useNavigate();
 
   const handleClearFavorites = () => {
     if (clearAllFavorites()) {
@@ -43,12 +48,21 @@ export default function Settings() {
     }
   };
 
-  const handleLogout = () => {
-    // Mock logout functionality
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/sign-in");
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleTheme = () => {
@@ -196,17 +210,37 @@ export default function Settings() {
             </CardContent>
           </Card>
 
-          {/* Account Actions */}
+         {/* Account Actions */}
           <Card>
             <CardContent className="pt-6">
-              <Button 
-                variant="outline" 
-                className="w-full text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                onClick={handleLogout}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You'll need to sign in again to access your account.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleLogout}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Sign Out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </div>

@@ -1,8 +1,27 @@
 // src/pages/auth/UserProfilePage.tsx
 import { UserProfile } from "@clerk/clerk-react";
 import { AuthContainer } from "../../components/auth/AuthContainer";
+import { useTheme } from "../../components/ui/theme-provider";
 
 export const UserProfilePage = () => {
+  const { theme } = useTheme();
+
+  const getThemeVariables = () => {
+    return theme === 'dark' ? {
+      colorBackground: 'hsl(var(--background))',
+      colorText: 'hsl(var(--foreground))',
+      colorTextSecondary: 'hsl(var(--muted-foreground))',
+      colorInputBackground: 'hsl(var(--background))',
+      colorInputText: 'hsl(var(--foreground))',
+    } : {
+      colorBackground: 'hsl(var(--background))',
+      colorText: 'hsl(var(--foreground))',
+      colorTextSecondary: 'hsl(var(--muted-foreground))',
+      colorInputBackground: 'hsl(var(--background))',
+      colorInputText: 'hsl(var(--foreground))',
+    };
+  };
+
   return (
     <AuthContainer 
       title="Your Profile" 
@@ -10,6 +29,8 @@ export const UserProfilePage = () => {
     >
       <UserProfile
         appearance={{
+          baseTheme: theme === 'dark' ? undefined : undefined, // Clerk handles dark/light themes
+          variables: getThemeVariables(),
           elements: {
             rootBox: "w-full",
             card: "shadow-none bg-transparent w-full p-0",
